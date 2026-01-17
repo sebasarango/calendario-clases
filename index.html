@@ -37,7 +37,6 @@
       const sesion = norm(r["Sesión"] || r["Sesion"] || r.Sesion);
       const docente = norm(r.Docente);
       const link = norm(r.Link);
-      const nivel = norm(r.Nivel);
       const colorPorNivel = {
         "Básico": "#1D4ED8",
         "Basico": "#1D4ED8",      // por si viene sin tilde
@@ -117,6 +116,7 @@ const eventColor = colorPorNivel[nivel] || "#374151"; // default
   </script>
 </body>
 </html>
+
 
 
 
