@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Calendario de Clases</title>
+
+  <!-- FullCalendar -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+  <!-- PapaParse -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <style>
+    body { font-family: system-ui, Arial; margin: 0; padding: 16px; }
+    #calendar { max-width: 1100px; margin: 0 auto; }
+    .fc-event { cursor: pointer; }
+  </style>
+</head>
+
+<body>
+  <div id="calendar"></div>
+
+  <script>
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0jhOTZyO3Qx6u0obiV1Yx0N15MRNrn8WuADA8V8v_3EAL8CHJAK2Ic1d4JxnN1zSi63MRr6X5BiVG/pubhtml?gid=0&single=true";
+
+    const norm = (s) => (s ?? "").toString().trim();
+
+    function rowToEvent(r) {
+      const fecha = norm(r.Fecha);
+      const hi = norm(r.Hora_inicio);
+      const hf = norm(r.Hora_fin);
+
+      const curso = norm(r.Curso);
+      const nivel = norm(r.Nivel);
+      const sesion = norm(r["Sesión"] || r.Sesion);
+      const docente = norm(r.Docente);
+      const link = norm(r.Link);
+
+      if (!fecha || !hi || !hf || !curso) return null;
+
+      return {
+        title: `${curso}${nivel ? " ("+nivel+")" : ""}${sesion ? " - Sesión "+sesion : ""}`,
+        start: `${fecha}T${hi}`,
+        end: `${fecha}T${hf}`,
+        extendedProps: { curso, nivel, sesion, docente, link }
+      };
+    }
+
+    async function fetchCSVRows() {
+      const res = await fetch(CSV_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error("No se pudo leer el CSV. Revisa si está publicado.");
+      const text = await res.text();
+
+      const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
+      return parsed.data;
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const rows = await fetchCSVRows();
+        const events = rows.map(rowToEvent).filter(Boolean);
+
+        const calendar = new FullCalendar.Calendar(document.getElementById("calendar"), {
+          initialView: "timeGridWeek",
+          locale: "es",
+          nowIndicator: true,
+          slotMinTime: "06:00:00",
+          slotMaxTime: "22:00:00",
+          height: "auto",
+          headerToolbar: {
+            left: "prev,next today",
+            center: "title",
+            right: "timeGridWeek,dayGridMonth,listWeek"
+          },
+          events,
+          eventClick: (info) => {
+            const p = info.event.extendedProps;
+            const msg =
+              `Curso: ${p.curso}\n` +
+              (p.nivel ? `Nivel: ${p.nivel}\n` : "") +
+              (p.sesion ? `Sesión: ${p.sesion}\n` : "") +
+              (p.docente ? `Docente: ${p.docente}\n` : "") +
+              (p.link ? `\n¿Abrir link de acceso?\n${p.link}` : "");
+
+            if (p.link) {
+              if (confirm(msg)) window.open(p.link, "_blank", "noopener,noreferrer");
+            } else {
+              alert(msg);
+            }
+          }
+        });
+
+        calendar.render();
+      } catch (e) {
+        console.error(e);
+        alert("Error cargando el calendario. Revisa la URL CSV y que la hoja esté publicada.");
+      }
+    });
+  </script>
+</body>
+</html>
