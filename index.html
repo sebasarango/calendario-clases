@@ -98,7 +98,7 @@ const eventColor = colorPorNivel[nivel] || "#374151"; // default
               (p.nivel ? `Nivel: ${p.nivel}\n` : "") +
               (p.sesion ? `Sesión: ${p.sesion}\n` : "") +
               (p.docente ? `Docente: ${p.docente}\n` : "") +
-              (p.link ? `\n¿Abrir link de acceso?\n${p.link}` : "");
+              (p.link ? `\nPara participar, agradecemos ingresar al siguiente enlace y realizar el registro correspondiente 5 minutos antes del inicio de la sesión, ya que este habilita el acceso a la clase:\n${p.link}` : "");
 
             if (p.link) {
               if (confirm(msg)) window.open(p.link, "_blank", "noopener,noreferrer");
@@ -117,6 +117,7 @@ const eventColor = colorPorNivel[nivel] || "#374151"; // default
   </script>
 </body>
 </html>
+
 
 
 
