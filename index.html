@@ -65,6 +65,8 @@
         const calendar = new FullCalendar.Calendar(document.getElementById("calendar"), {
           initialView: "timeGridWeek",
           locale: "es",
+
+          
           nowIndicator: true,
           slotMinTime: "06:00:00",
           slotMaxTime: "22:00:00",
@@ -73,6 +75,12 @@
             left: "prev,next today",
             center: "title",
             right: "timeGridWeek,dayGridMonth,listWeek"
+          },
+          buttonText: {
+            today: "hoy",
+            week: "semana",
+            month: "mes",
+            list: "lista"
           },
           events,
           eventClick: (info) => {
@@ -101,6 +109,7 @@
   </script>
 </body>
 </html>
+
 
 
 
