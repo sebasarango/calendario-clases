@@ -37,6 +37,15 @@
       const sesion = norm(r["Sesión"] || r["Sesion"] || r.Sesion);
       const docente = norm(r.Docente);
       const link = norm(r.Link);
+      const nivel = norm(r.Nivel);
+      const colorPorNivel = {
+        "Básico": "#1D4ED8",
+        "Basico": "#1D4ED8",      // por si viene sin tilde
+        "Intermedio": "#7C3AED",
+        "Avanzado": "#DC2626"
+      };
+
+const eventColor = colorPorNivel[nivel] || "#374151"; // default
 
       if (!fecha || !hi || !hf || !curso) return null;
 
@@ -44,6 +53,7 @@
         title: `${curso}${nivel ? " ("+nivel+")" : ""}${sesion ? " - Sesión "+sesion : ""}`,
         start: `${fecha}T${hi}`,
         end: `${fecha}T${hf}`,
+        color: eventColor,
         extendedProps: { curso, nivel, sesion, docente, link }
       };
     }
@@ -107,6 +117,7 @@
   </script>
 </body>
 </html>
+
 
 
 
